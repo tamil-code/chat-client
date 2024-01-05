@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export const instance1 = axios.create({
-    baseURL:'http://localhost:5000',
+    baseURL:import.meta.env.VITE_API_ENDPOINT,
     headers:{
         'Content-Type':'application/json'
     }
