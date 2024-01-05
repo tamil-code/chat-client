@@ -5,6 +5,7 @@ import {useMutation} from 'react-query'
 import { postLogin } from '../lib/axios';
 import {ChatContext} from '../context/ChatContextProvider'
 import { useNavigate } from 'react-router-dom';
+import { isAxiosError } from 'axios';
 
 
 const Login = () => {
@@ -24,7 +25,7 @@ const Login = () => {
     onSuccess:(response)=>{
       console.log(response);
       const {data} = response;
-      if(!data.status){
+      if(!data?.status||isAxiosError(response)){
         toast({
           title: 'Login failed',
           description:data.message,
