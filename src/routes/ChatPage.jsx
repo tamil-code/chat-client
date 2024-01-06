@@ -18,8 +18,8 @@ const ChatPage = () => {
       return postAuthenticate(data);
     },
     onSuccess:(res)=>{
-        const authenticatedUser = res.data.user;
-        const token  = res.data.token;
+        const authenticatedUser = res.data?.user;
+        const token  = res.data?.token;
         localStorage.setItem('userInfo',JSON.stringify(authenticatedUser));
         localStorage.setItem('token',JSON.stringify({token:token}));
 
