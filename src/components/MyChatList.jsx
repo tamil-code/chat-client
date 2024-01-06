@@ -16,15 +16,17 @@ const MyChatList = () => {
 const fetchChatList = useQuery({
   queryKey:'fetchchat',
   queryFn:()=>{
-    console.log();
     return getAllChats(JSON.parse(localStorage.getItem('token'))?.token)
   },
   onSuccess:(data)=>{
-    console.log(data);
   },
   onError:(err)=>{
-    console.log(err);
-  }
+    toast({
+      title: err?.message,
+      status: "warning",
+      duration: 4000,
+      isClosable: true,
+    });  }
 })
 
 
@@ -44,10 +46,10 @@ const onClose = ()=>{setOpen(false)}
         :
         fetchChatList.data?.data?.map((user)=>{
             if(user.isGroupChat){
-              return <GroupChartCard user={user}/>
+              return <GroupChartCard user={user} key={user._id}/>
             }
             else{
-              return <SingleChartCard userdata={user}/>
+              return <SingleChartCard userdata={user} key={user._id}/>
             }
         })
         }

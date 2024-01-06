@@ -6,8 +6,8 @@ const SearchSkeleton = ({count}) => {
   
   return (
     <Stack>
-     {dummy.map(()=>{
-        return <Skeleton height="60px" />  
+     {dummy.map((i,index)=>{
+        return <Skeleton height="60px" key={index} />  
        
      })}
     </Stack>

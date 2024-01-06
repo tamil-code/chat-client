@@ -24,6 +24,7 @@ import UserCard from '../usercomponents/UserCard';
 import { ChatContext } from '../../context/ChatContextProvider';
 import { CloseIcon, EditIcon } from '@chakra-ui/icons';
 import OverlaySpinner from '../OverlaySpinner/OverlaySpinner';
+import { isAxiosError } from 'axios';
 
 const GroupInfoCard = ({open,onClose}) => {
     const queryClient = useQueryClient();
@@ -53,7 +54,6 @@ const GroupInfoCard = ({open,onClose}) => {
     }
 
     const handleRemoveSelectedUser = (selecteduser)=>{
-        console.log(selecteduser._id);
         const payload = {token:JSON.parse(localStorage.getItem('token'))?.token,chatName:groupName,chatId:currentChat?._id,userId:selecteduser._id}
         
         removeGroupUserQuery.mutate(payload);
@@ -72,14 +72,18 @@ const GroupInfoCard = ({open,onClose}) => {
     const searchUserQuery = useMutation({
         mutationKey:'searchuser',
         mutationFn:(data)=>{
-          console.log(data);
           return postSearchUser(data);
         },
         onSuccess:(res)=>{
-          console.log(res);
+         
         },
         onError:(err)=>{
-          console.log(err);
+          toast({
+            title: err?.message,
+            status: "warning",
+            duration: 4000,
+            isClosable: true,
+          });
         }
       })
     // const newGroupQuery = useMutation({
@@ -114,7 +118,6 @@ const GroupInfoCard = ({open,onClose}) => {
             return postRenameGroup(data)
         },
         onSuccess:(res)=>{
-            console.log(res);
             if(res?.status==200){
                            
                             toast({
@@ -139,7 +142,6 @@ const GroupInfoCard = ({open,onClose}) => {
             return postAddToGroup(data);
         },
         onSuccess:(res)=>{
-            console.log(res);
              if( res?.response?.status==403){
             toast({
               title: `access denied`,
@@ -164,8 +166,16 @@ const GroupInfoCard = ({open,onClose}) => {
           }
         },
         onError:(err)=>{
-            console.log(err);
-        }
+         
+            toast({
+              title: err?.message,
+              status: "warning",
+              duration: 4000,
+              isClosable: true,
+            });
+          }
+
+        
     })
     const removeGroupUserQuery = useMutation({
         mutationKey:"remove-user",
@@ -173,7 +183,6 @@ const GroupInfoCard = ({open,onClose}) => {
             return deleteGroupUser(data);
         },
         onSuccess:(res)=>{
-            console.log(res);
             if(res?.response?.status==403){
                 toast({
                   title: `access denied`,
@@ -206,7 +215,6 @@ const GroupInfoCard = ({open,onClose}) => {
             return deleteGroup(data);
         },
         onSuccess:(res)=>{
-            console.log(res);
             if(res?.response?.status==403){
                 toast({
                     title: `Access deinied`,
@@ -230,7 +238,12 @@ const GroupInfoCard = ({open,onClose}) => {
             }
         },
         onError:(err)=>{
-            console.log(err);
+          toast({
+            title: err?.message,
+            status: "warning",
+            duration: 4000,
+            isClosable: true,
+          });
         }
     })
     const handleSearch = (e)=>{
@@ -248,7 +261,6 @@ const GroupInfoCard = ({open,onClose}) => {
 
     const handleRename = (e)=>{
         if(currentChat?.chatName==groupName)return;
-        console.log();
        if(e.code=="Enter"){
         const payload = {token:JSON.parse(localStorage.getItem('token'))?.token,chatName:groupName,chatId:currentChat?._id}
         renameGroupQuery.mutate(payload)
@@ -325,7 +337,6 @@ const GroupInfoCard = ({open,onClose}) => {
         <Button colorScheme='red' mr={3} isLoading={deleteGroupQuery.isLoading} onClick={handleDeleteGroup}>
           Delete Group
         </Button>
-        {/* <Button variant='ghost' onClick={handleCreateGroup} isLoading={newGroupQuery.isLoading}>Update group</Button> */}
       </ModalFooter>
     </ModalContent>
   </Modal>

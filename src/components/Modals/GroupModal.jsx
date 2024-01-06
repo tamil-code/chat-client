@@ -36,7 +36,6 @@ const GroupModal = ({open,onClose}) => {
     }
 
     const handleRemoveSelectedUser = (selecteduser)=>{
-        console.log(selecteduser._id);
         setUserList((prevList)=>{
             const newList = prevList.filter((user)=>{
                 return user._id!=selecteduser._id
@@ -49,14 +48,15 @@ const GroupModal = ({open,onClose}) => {
     const searchUserQuery = useMutation({
         mutationKey:'searchuser',
         mutationFn:(data)=>{
-          console.log(data);
           return postSearchUser(data);
         },
-        onSuccess:(res)=>{
-          console.log(res);
-        },
         onError:(err)=>{
-          console.log(err);
+          toast({
+            title: err?.message,
+            status: "warning",
+            duration: 4000,
+            isClosable: true,
+          });
         }
       })
     const newGroupQuery = useMutation({
@@ -65,7 +65,6 @@ const GroupModal = ({open,onClose}) => {
             return postNewGroup(data);
         },
         onSuccess:(res)=>{
-            console.log(res);
             if(res.status==200){
                 setGroupName(null);
                 setUserList([]);
@@ -83,7 +82,12 @@ const GroupModal = ({open,onClose}) => {
             }
         },
         onError:(err)=>{
-            console.log(err);
+          toast({
+            title: err?.message,
+            status: "warning",
+            duration: 4000,
+            isClosable: true,
+          });
         }
     })
     const handleSearch = (e)=>{
@@ -99,7 +103,6 @@ const GroupModal = ({open,onClose}) => {
             return user._id;
         });
         const payload = {token:JSON.parse(localStorage.getItem('token'))?.token,name:groupName,users:userIds}
-        console.log(payload);
         newGroupQuery.mutate(payload)
     }
   return (

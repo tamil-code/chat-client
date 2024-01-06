@@ -1,5 +1,7 @@
 import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement,useToast } from '@chakra-ui/react'
 import React, { useRef, useState } from 'react'
+import { useMutation } from 'react-query';
+import { postRegister } from '../lib/axios';
 
 const SignUp = () => {
   const toast = useToast();
@@ -12,9 +14,39 @@ const SignUp = () => {
      setShow((prev)=>!prev);
   }
 
+  const signUpQuery = useMutation({
+    mutationKey:"signup",
+    mutationFn:(data)=>{
+      return postRegister(data);
+    },
+    onSuccess:(res)=>{
+      if(res?.data?.message=="user already found ! "){
+        console.log(res);
+        toast({
+          title: 'user already found !',
+          status: 'warning',
+          duration: 4000,
+          isClosable: true,
+        })
+        return;
+      }
+      else if(res?.data?.message=="User registered successfullly !"){
+        toast({
+          title: 'User registered successfullly !',
+          status: 'success',
+          duration: 4000,
+          isClosable: true,
+        })
+        
+        return;
+      }
+    },
+    onError:(err)=>{
+      console.log(err);
+    }
+  })
   const handleChooseButtonClick = ()=>{
       imageref.current.click();
-      console.log('clicked');
   }
   const handleUploadImage =async (event)=>{
      try{
@@ -61,7 +93,6 @@ const SignUp = () => {
      
      }
      catch(err){
-      console.log(err);
       toast({
         title: 'failed to upload the image',
         description: err.message,
@@ -75,9 +106,15 @@ const SignUp = () => {
   }
   const handleSignUpFormSubmit = (event)=>{
     event.preventDefault()
-     console.log(event.target[0].value);
-     console.log(event.target[1].value);
-     console.log(event.target[2].value);
+     console.log(event);
+     const payload = {
+      username:e.target[0].value,
+      email:e.target[1].value,
+      password:e.target[2].value,
+      profileURL:uploadImage
+     }
+     signUpQuery.mutate(payload);
+
     
   }
   return (
@@ -113,7 +150,7 @@ const SignUp = () => {
              <Button  variant='solid' size={'xs'} onClick={handleChooseButtonClick} colorScheme='blue'>choose image</Button>
             </InputGroup>
           </FormControl> 
-          <Button variant={'solid'} type='submit' colorScheme='blue' size={'sm'} loadingText="signing in..." isLoading={loading}>SignUp</Button>
+          <Button variant={'solid'} type='submit' colorScheme='blue' size={'sm'} loadingText="signing in..." isLoading={loading} >SignUp</Button>
     </form>
   )
 }

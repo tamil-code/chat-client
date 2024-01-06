@@ -23,15 +23,19 @@ const SideDrawer = ({open,handleClose}) => {
   const searchUserQuery = useMutation({
     mutationKey:'searchuser',
     mutationFn:(data)=>{
-      console.log(data);
+      consolce.log(data);
       return postSearchUser(data);
     },
     onSuccess:(res)=>{
-      console.log(res);
+      
     },
     onError:(err)=>{
-      console.log(err);
-    }
+      toast({
+        title: err?.message,
+        status: "warning",
+        duration: 4000,
+        isClosable: true,
+      });    }
   })
 
   const acessUserQuery = useMutation({
@@ -41,30 +45,29 @@ const SideDrawer = ({open,handleClose}) => {
     },
     onSuccess:(res)=>{
       if(res.status==200){
-        console.log(res);
         queryClient.invalidateQueries('fetchchat');
         handleClose();
       }
     }
     ,
     onError:(err)=>{
-      console.log(err);
-    }
+      toast({
+        title: err?.message,
+        status: "warning",
+        duration: 4000,
+        isClosable: true,
+      });    }
   })
     const handleSearchUser = (e)=>{
        setSearchText(e.target.value);
     }
     const handleSubmitSearch = ()=>{
-      console.log(searchText);
       if(searchText){
         const payload = {text:searchText,token:JSON.parse(localStorage.getItem('token'))?.token};
-        console.log(payload);
          searchUserQuery.mutate(payload);
       }
     }
-    if(searchUserQuery.isLoading){
-       console.log(searchUserQuery.data);
-    }
+   
     const handleAcessChat = (userId)=>{
       const payload = {userId:userId,token:JSON.parse(localStorage.getItem('token'))?.token};
       acessUserQuery.mutate(payload);

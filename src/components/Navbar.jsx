@@ -24,7 +24,6 @@ import { ChatContext } from "../context/ChatContextProvider";
 const Navbar = () => {
   const navigate = useNavigate();
   const {user,setAuth,setUser} = useContext(ChatContext);
-  console.log(user);
   const [open, setOpen] = useState(false);
   const[profileOpen,setProfileOpen] = useState(false);
   const handleOpen = () => {
@@ -35,7 +34,6 @@ const Navbar = () => {
   };
 
   const handleMyProfile = ()=>{
-    console.log("profile");
     setProfileOpen(true);
   }
   const handleLogout = ()=>{

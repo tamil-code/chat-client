@@ -1,9 +1,9 @@
-import { Box, Container,Tab,TabList,TabPanels,TabPanel,Tabs, useToast } from "@chakra-ui/react";
+import {  Container,Tab,TabList,TabPanels,TabPanel,Tabs, useToast } from "@chakra-ui/react";
 import React, { useContext,useEffect } from "react";
 import Login from "../components/Login";
 import SignUp from '../components/SignUp';
 
-import { json, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import { ChatContext } from "../context/ChatContextProvider";
 import { useMutation } from "react-query";
 import { postAuthenticate } from "../lib/axios";
@@ -22,7 +22,6 @@ const Root = () => {
       return postAuthenticate(data);
     },
     onSuccess:(res)=>{
-        console.log(res);
         const authenticatedUser = res.data.user;
         const token = res.data.token;
         localStorage.setItem('userInfo',JSON.stringify(authenticatedUser));
@@ -38,6 +37,12 @@ const Root = () => {
        
     },
     onError:(err)=>{
+      toast({
+        title: err?.message,
+        status: "warning",
+        duration: 4000,
+        isClosable: true,
+      });
       if(err.message=="Network Error"){
         toast({
           title: 'Network Error',
@@ -71,7 +76,6 @@ const Root = () => {
     setUseronRefresh();
   },[])
   const setUseronRefresh = ()=>{
-    console.log("IN rootsjs /");
     const accesstoken = JSON.parse(localStorage.getItem('token'));
     authenticateQuery.mutate({token:accesstoken?.token});
     

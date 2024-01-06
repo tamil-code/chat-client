@@ -8,7 +8,6 @@ const SingleChartCard = ({userdata}) => {
   const anotherUser = userdata.users?.filter((eachuser)=>{
     return eachuser._id!=user._id
   })
-  console.log(anotherUser);
   const handlesetCurrentuser = ()=>{
     setCurrentChat(userdata)
     setCurrentReceiver(anotherUser)

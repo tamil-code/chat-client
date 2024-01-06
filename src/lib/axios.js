@@ -7,6 +7,17 @@ export const instance1 = axios.create({
     }
 })
 
+export const postRegister  = async (data)=>{
+    console.log(data);
+    try{
+        const response = await instance1.post('/register',data)
+        return response;
+    }
+    catch(err){
+        console.log(err);
+        return err;
+    }
+}
 export const postLogin  = async (data)=>{
     console.log(data);
     try{

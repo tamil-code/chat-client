@@ -6,7 +6,6 @@ import groupImg from '../../assets/group.png'
 import style from './dummy.module.css'
 import { ChatContext } from '../../context/ChatContextProvider'
 const GroupChartCard = ({user}) => {
-  console.log(user);
   const {setCurrentChat,setCurrentMsg} = useContext(ChatContext);
   
   const handleCurrentChat = ()=>{

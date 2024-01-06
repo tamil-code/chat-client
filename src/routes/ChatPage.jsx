@@ -18,7 +18,6 @@ const ChatPage = () => {
       return postAuthenticate(data);
     },
     onSuccess:(res)=>{
-        console.log(res);
         const authenticatedUser = res.data.user;
         const token  = res.data.token;
         localStorage.setItem('userInfo',JSON.stringify(authenticatedUser));
@@ -26,7 +25,6 @@ const ChatPage = () => {
 
         // console.log(User);
          if(authenticatedUser){
-          console.log(authenticatedUser);
            setUser(authenticatedUser);
            setAuth(true);
           
@@ -34,6 +32,12 @@ const ChatPage = () => {
        
     },
     onError:(err)=>{
+      toast({
+        title: err?.message,
+        status: "warning",
+        duration: 4000,
+        isClosable: true,
+      });
       if(err.response.status==401){
         console.log("unauthorized");
         localStorage.clear();
@@ -49,7 +53,6 @@ const ChatPage = () => {
     setUseronRefresh();
   },[])
   const setUseronRefresh = ()=>{
-    console.log("IN rootsjs /");
     const accesstoken = JSON.parse(localStorage.getItem('token'));
     if(accesstoken){
       authenticateQuery.mutate({token:accesstoken?.token});
@@ -93,9 +96,9 @@ const ChatPage = () => {
   return (
     <div className='w-full h-screen '>
         <Navbar/>
-        <div className="w-full h-[70vh] grid grid-cols-3 grid-rows-1  px-2 ">
+        <div className="w-full h-[70vh]  grid grid-cols-3 grid-rows-1  px-2 ">
               <MyChatList/>
-              {currentChat?<MyChat/>:(<div className=' col-span-2 bg-gray-200 rounded-tr-2xl h-full w-full rounded-br-2xl'>
+              {currentChat?<MyChat/>:(<div className=' col-span-2   bg-gray-200 rounded-tr-2xl h-full w-full flex items-center justify-center rounded-br-2xl'>
          select a chat to start messaging
       </div>)}
         </div>

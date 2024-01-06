@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { Avatar, IconButton, Input, Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react'
+import { Avatar, IconButton, Input, Menu, MenuButton, MenuItem, MenuList, useToast } from '@chakra-ui/react'
 import ScrollableFeed from 'react-scrollable-feed'
 
 //icons
@@ -21,6 +21,7 @@ import { getAllMessages } from '../lib/axios';
 
 //loader css
 import '../App.css'
+import { isAxiosError } from 'axios';
 
 const MyChat = () => {
   
@@ -28,6 +29,7 @@ const MyChat = () => {
   const[message,setMessage] = useState([]);
   const[msgTxt,setMsgTxt] = useState(null);
   const[isTyping,setIsTyping] = useState(false);
+  const toast = useToast();
 
   const socketRef = useRef(); // Use useRef to create a persistent reference to the socket
 
@@ -38,13 +40,21 @@ const MyChat = () => {
     },
     onSuccess:(res)=>{
         if(res?.data){
-          console.log(res.data);
+         
           setCurrentMsg(res.data);
         }
 
     },
     onError:(err)=>{
-      console.log(err);
+     if(isAxiosError(err)){
+      toast({
+        title: 'fetching message failed',
+        description:err?.message,
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      })
+     }
     }
 
   })
@@ -55,7 +65,6 @@ const MyChat = () => {
     socketRef.current = io(import.meta.env.VITE_API_ENDPOINT);
 
     socketRef.current.on('connect', () => {
-      console.log(socketRef.current.id);
     });
 
     socketRef.current.emit('join-room', currentChat?._id);
@@ -79,7 +88,6 @@ const MyChat = () => {
     })
 
     if(currentChat!=null){
-      console.log("fetching chats in mongodb");
       const payload = {token:JSON.parse(localStorage.getItem('token'))?.token,chatId:currentChat?._id}
       fetchChatMsg.mutate(payload);
 
@@ -106,20 +114,19 @@ const MyChat = () => {
   },[currentMsg])
   const[infoState,setInfoState]=useState(false);
 
-  console.log(message);
+  
   const handleChatInfo = (type)=>{
      if(type=="groupInfo"){
        setInfoState(true);
      }
   }
   const handleInfoCardClose=()=>{
-    console.log("INfo card closed");
+   
     setInfoState(false);
   }
  
   const debounce = (cb,d)=>{
     let timer;
-    console.log("debounce called");
      return ()=>{
         clearTimeout(timer);
       
@@ -130,14 +137,13 @@ const MyChat = () => {
  }
 
  const handleEndTyping = ()=>{
-  console.log("end typing");
  
     setIsTyping(false);
   
  }
   const handleChatMessage = (type,e)=>{
    
-    console.log("type: ",type);
+   
     socketRef.current.emit("start-typing",currentChat._id,user._id)
     if(e.code=="Enter"){
       if(msgTxt=='')return;
@@ -182,28 +188,27 @@ const MyChat = () => {
              <ScrollableFeed className="w-full bg-gray-200  " ref={scrollableContainerRef}>
              
                     {
-                      message?.map((msgdata)=>{
-                        console.log("sender: ",msgdata.sender);
-                        console.log("receiver: ",user._id);
+                      message.length!=0? message?.map((msgdata)=>{
+                        
                         if(msgdata.sender==user._id){
-                            return <SenderChatCard message={msgdata.content}/>
+                            return <SenderChatCard message={msgdata.content} key={message._id}/>
                         }
                         else{
                           if(msgdata.type=="single"){
-                            return <ReceiverChartCard message={msgdata.content} />
+                            return <ReceiverChartCard message={msgdata.content} key={message._id}/>
 
                           }
                           if(msgdata.type=="group"){
                             const msgsender = currentChat.users?.filter((user)=>user._id==msgdata.sender); 
                               
-                            return <ReceiverChartCardWithProfile content={msgdata.content} senderProfile={msgsender[0]?.pic} sender={msgsender[0]?.username}/>
+                            return <ReceiverChartCardWithProfile content={msgdata.content} senderProfile={msgsender[0]?.pic} sender={msgsender[0]?.username} key={message._id}/>
                           }
                         }
-                      })
+                      }):<div className='w-full h-[90%] '></div>
                       
                     }
                    
-              {isTyping&&    <div className=" w-full mb-2 -ml-2 flex items-center justify-start ">
+              {isTyping&& <div className=" w-full mb-2 -ml-2 flex items-center justify-start ">
                                 <span className="loader"></span>
                 </div>}
               </ScrollableFeed>
